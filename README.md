@@ -71,6 +71,11 @@
 - Any other value causes the destroy job to be skipped.
 - Terraform uses `-auto-approve` only after the `DESTROY` confirmation check succeeds.
 
+## Step 6: Updated Repo name to Terraform-VM from Terraform
+
+- To validate that the 'immutable subject claims' works and renaming the repo wouldn't break the trust between the Azure and Github.
+
+
 Architecture:
 
 ```text
