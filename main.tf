@@ -18,7 +18,7 @@ resource "azurerm_windows_virtual_machine" "vm-terraform" {
   name                = "sachin-vm"
   resource_group_name = module.resource.name
   location            = module.resource.location
-  size                = "Standard_D4_v5"
+  size                = "Standard_D2s_v5"
   admin_username      = "adminuser"
   admin_password      = "Saz@2701"
   network_interface_ids = [
