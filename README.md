@@ -1,5 +1,9 @@
 # Terraform
 
+The Azure authentication is through Federated identity credentials.
+
+
+
 Architecture:
 
 ```text
