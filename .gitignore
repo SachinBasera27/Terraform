@@ -11,4 +11,3 @@ terraform.exe
 # Plan files
 *.tfplan
 *.plan
-

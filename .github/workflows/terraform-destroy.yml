@@ -1,0 +1,49 @@
+name: Destroy test workload
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: To remove the VM, disk, and networking test resources
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  destroy-test-workload:
+    if: inputs.confirm == 'DESTROY'
+    runs-on: ubuntu-latest
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: "true"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.8"
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Plan destruction of test workload only
+        run: |
+          terraform plan -destroy -out=destroy.tfplan \
+            -target=azurerm_virtual_machine.vm-terraform \
+            -target=azurerm_virtual_machine_data_disk_attachment.dda-tf \
+            -target=module.storage.azurerm_managed_disk.dataDiskVM \
+            -target=module.networking.azurerm_network_interface.nic-terraform \
+            -target=module.networking.azurerm_subnet.subnet-terraform \
+            -target=module.networking.azurerm_virtual_network.vnet-terraform
+
+      - name: Destroy test workload
+        run: terraform apply -auto-approve destroy.tfplan
