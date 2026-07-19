@@ -1,8 +1,62 @@
-# Terraform
+# Terraform Azure CI/CD with GitHub Actions
 
-The Azure authentication is through Federated identity credentials.
+## Step 1: Create Backend Resources
 
+- Created an Azure Resource Group.
+- Created an Azure Storage Account.
+- Created the blob container for Terraform remote state.
+- Configured the AzureRM backend with the state key to store the state file securely.
 
+## Step 2: Configure Azure Authentication
+
+- Created an Azure App Registration and Service Principal.
+- Assigned the `Contributor` role at the subscription level.
+- Assigned the `Storage Blob Data Contributor` role for the Terraform state storage account/container.
+- Configured GitHub Actions federated credentials for passwordless OIDC authentication.
+
+[Microsoft Entra Federated Credentials Documentation](https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-credentials)
+
+## Step 3: Configure GitHub Actions
+
+- Added GitHub secrets for Azure Client ID, Tenant ID, and Subscription ID.
+- Added `id-token: write` permission for OIDC authentication.
+- Created workflows for Terraform plan, apply, and targeted resource destruction.
+- Configured Terraform to use the Azure Storage remote backend.
+
+## Step 4: Deploy Infrastructure
+
+- Ran `terraform init`.
+- Ran `terraform fmt`.
+- Ran `terraform validate`.
+- Ran `terraform plan`.
+- Ran `terraform apply`.
+- Deployed the VNet, subnet, NIC, managed disk, and Windows VM.
+- Confirmed Terraform state is stored in Azure Blob Storage.
+
+## Issues Encountered and Fixes
+
+### OIDC Federated Identity Error
+
+- Received the `AADSTS700213` federated identity error.
+- GitHub sent an immutable subject containing GitHub owner and repository IDs.
+- Updated the App Registration federated credential subject to exactly match the subject shown in the GitHub Actions error.
+- Re-ran the workflow successfully.
+
+[Microsoft Entra Workload Identity Federation Documentation](https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation)
+
+### Terraform Formatting Error
+
+- `terraform fmt -check` failed because `backend.tf` was not formatted.
+- Ran `terraform fmt`.
+- Pushed the formatted file and re-ran the workflow.
+
+### VM Capacity Restriction
+
+- `Standard_D4_v5` was unavailable in the `Central US` region.
+- Changed to an available VM size while keeping the same region.
+- Re-ran Terraform apply successfully.
+
+[Azure VM Allocation Troubleshooting Documentation](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/allocation-failure)
 
 Architecture:
 
