@@ -58,6 +58,19 @@
 
 [Azure VM Allocation Troubleshooting Documentation](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/allocation-failure)
 
+## Step 5: Destroy Test Resources
+
+- Added a manual GitHub Actions workflow named `terraform-destroy.yml`.
+- The workflow destroys only the test VM, managed disk, NIC, subnet, and VNet.
+- The Resource Group, Storage Account, Blob Container, and remote Terraform state file are not targeted.
+
+### Safety Check
+
+- The destroy job runs only when the exact value `DESTROY` is entered.
+- It can be modified to run with just manual action without having to give in any input.
+- Any other value causes the destroy job to be skipped.
+- Terraform uses `-auto-approve` only after the `DESTROY` confirmation check succeeds.
+
 Architecture:
 
 ```text
