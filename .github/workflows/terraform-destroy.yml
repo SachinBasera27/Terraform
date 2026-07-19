@@ -2,6 +2,11 @@ name: Destroy test workload
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: To remove the VM, disk, and networking test resources
+        required: true
+        type: string
 
 permissions:
   id-token: write
